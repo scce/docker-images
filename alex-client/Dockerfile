@@ -1,12 +1,9 @@
-FROM debian:stable as cloner
-RUN apt-get update && \
-	apt-get install -y git
-RUN git clone https://github.com/LearnLib/alex.git --branch developer --single-branch 
-
+FROM alpine/git as cloner
+RUN git clone https://github.com/LearnLib/alex-cli.git --branch master --single-branch /alex-cli
 
 FROM node:9.2.1
+COPY --from=cloner /alex-cli /alex-cli
 WORKDIR /alex-cli
-COPY --from=cloner /alex/cli/src/main/javascript .
 RUN npm install -g
 ENTRYPOINT ["/usr/local/bin/alex-cli"]
 CMD ["--help"]
