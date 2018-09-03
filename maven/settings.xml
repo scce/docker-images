@@ -1,0 +1,13 @@
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                      https://maven.apache.org/xsd/settings-1.0.0.xsd">
+    <localRepository>/builds/scce/cinco/m2/repository</localRepository>
+    <servers>
+        <server>
+            <id>cinco-meta-snapshot</id>
+            <username>${env.CINCO_META_SNAPSHOT_SERVER_USERNAME}</username>
+            <password>${env.CINCO_META_SNAPSHOT_SERVER_PASSWORD}</password>
+        </server>
+    </servers>
+</settings>
