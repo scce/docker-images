@@ -2,14 +2,8 @@ const express = require('express');
 const app = express();
 const expressWs = require('express-ws')(app);
 
-app.use(function (req, res, next) {
-    console.log('middleware');
-    req.testing = 'testing';
-    return next();
-});
-
 app.get('/', function (req, res, next) {
-    console.log('get route', req.testing);
+    console.log('http');
     res.send('http: Hello World');
     res.end();
 });
@@ -19,7 +13,7 @@ app.ws('/app/ws/', function (ws, req) {
         console.log(msg);
         ws.send('ws: Hello World')
     });
-    console.log('socket', req.testing);
+    console.log('socket');
 });
 
 app.listen(8080);
