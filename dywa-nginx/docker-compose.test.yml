@@ -1,0 +1,18 @@
+version: '3'
+services:
+  sut:
+    build:
+      context: sut
+    depends_on:
+    - nginx
+    - wildfly
+  nginx:
+    build:
+      context: .
+    depends_on:
+    - wildfly
+    ports:
+    - "8080:80"
+  wildfly:
+    build:
+      context: wildfly
