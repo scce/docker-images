@@ -25,7 +25,7 @@ RUN wget -O FirefoxSetup.tar.bz2 "https://download.mozilla.org/?product=firefox-
 
 # install ALEX
 # use the tu depot for the latest build until v1.4.0 is released on github
-RUN wget -O alex.war "https://depot.tu-dortmund.de/9rcgz"
+RUN wget -O alex.war "https://github.com/LearnLib/alex/releases/download/v1.6.0/alex-1.6.0.war"
 
 # get latest chrome driver
 RUN wget https://chromedriver.storage.googleapis.com/2.33/chromedriver_linux64.zip \
