@@ -2,7 +2,7 @@
 case "$1" in
   "-local")
     pub get
-    /root/.pub-cache/bin/pub serve --hostname=0.0.0.0 --define=local=true
+    pub serve --hostname=0.0.0.0 --define=local=true
     ;;
   "-production")
     cp -r /webapp/* /webbuild/
