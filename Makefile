@@ -25,4 +25,7 @@ build-mailcatcher:
 build-maven:
 	$(BUILD)maven mailcatcher
 
+test-frontend-nginx-config: build-frontend-nginx
+	docker run --rm --name frontend-nginx scce/frontend-nginx /etc/init.d/nginx configtest
+
 build-all: build-alex-client build-alex-server build-dywa-nginx build-frontend-dart build-dywa-postgres build-frontend-nginx build-mailcatcher build-maven
