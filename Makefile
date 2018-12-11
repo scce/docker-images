@@ -13,6 +13,9 @@ build-dywa-nginx:
 build-dywa-postgres:
 	$(BUILD)dywa-postgres dywa-postgres
 
+build-frontend-dart:
+	$(BUILD)frontend-dart frontend-dart
+
 build-frontend-nginx:
 	$(BUILD)frontend-nginx frontend-nginx
 
@@ -22,4 +25,4 @@ build-mailcatcher:
 build-maven:
 	$(BUILD)maven mailcatcher
 
-build-all: build-alex-client build-alex-server build-dywa-nginx build-dywa-postgres build-frontend-nginx build-mailcatcher build-maven
+build-all: build-alex-client build-alex-server build-dywa-nginx build-frontend-dart build-dywa-postgres build-frontend-nginx build-mailcatcher build-maven
