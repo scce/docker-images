@@ -13,6 +13,6 @@ case "$1" in
     ;;
   *)
     echo "Please specify the mode: [\"-local\", \"-production\"]"
-    exit 1
+    exit 0
     ;;
 esac

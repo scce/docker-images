@@ -13,4 +13,3 @@ RUN mkdir -p /usr/share/nginx/html/
 WORKDIR /webapp
 
 ENTRYPOINT ["/usr/local/bin/bootstrap"]
-CMD ["-local"]
