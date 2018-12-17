@@ -1,5 +1,6 @@
 GROUP=scce
 BUILD=docker build -t $(GROUP)/
+DEPLOY=./deploy.sh master
 
 build-alex-client:
 	$(BUILD)alex-client alex-client
@@ -24,6 +25,9 @@ build-mailcatcher:
 
 build-maven:
 	$(BUILD)maven mailcatcher
+
+deploy-frontend-dart:
+	$(DEPLOY) frontend-dart
 
 test-frontend-nginx-config: build-frontend-nginx
 	docker run --rm --name frontend-nginx scce/frontend-nginx /etc/init.d/nginx configtest
