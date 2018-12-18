@@ -1,7 +1,6 @@
-FROM google/dart:1.24.3
+FROM google/dart:2.1
 
-# Dart v2
-#RUN pub global activate webdev
+RUN pub global activate webdev
 
 ENV BOOTSTRAP_LOCATION=/usr/local/bin/bootstrap
 ADD bootstrap.sh $BOOTSTRAP_LOCATION
