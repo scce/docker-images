@@ -1,4 +1,4 @@
-FROM google/dart:2.1
+FROM google/dart:2.2
 
 RUN pub global activate webdev
 
