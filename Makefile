@@ -27,7 +27,7 @@ build-maven:
 	$(BUILD)maven mailcatcher
 
 deploy-frontend-dart:
-	$(DEPLOY) frontend-dart
+	$(DEPLOY) frontend-dart/latest
 
 test-frontend-nginx-config: build-frontend-nginx
 	docker run --rm --name frontend-nginx scce/frontend-nginx /etc/init.d/nginx configtest
