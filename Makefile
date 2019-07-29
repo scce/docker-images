@@ -11,18 +11,6 @@ deploy-dywa-nginx-unstable:
 	$(DEPLOY) dywa-nginx/unstable
 
 
-# alex-client
-
-build-alex-client:
-	$(BUILD)alex-client alex-client
-
-
-# alex-server
-
-build-alex-server:
-	$(BUILD)alex-server alex-server
-
-
 # dywa-postgres
 
 build-dywa-postgres:
@@ -59,4 +47,4 @@ build-maven:
 	$(BUILD)maven mailcatcher
 
 
-build-all: build-alex-client build-alex-server build-dywa-nginx build-frontend-dart build-dywa-postgres build-frontend-nginx build-mailcatcher build-maven
+build-all: build-dywa-nginx build-dywa-postgres build-frontend-dart build-frontend-nginx build-mailcatcher build-maven
