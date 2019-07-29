@@ -5,6 +5,9 @@ server {
         root /var/www/certbot;
     }
 
+    location / {
+        rewrite ^ https://$host$request_uri? permanent;
+    }
 }
 
 server {
