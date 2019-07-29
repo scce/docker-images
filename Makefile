@@ -8,7 +8,7 @@ DEPLOY=./deploy.sh master
 build-dywa-nginx:
 	$(BUILD)dywa-nginx dywa-nginx
 
-deploy-dywa-nginx-unstable:
+deploy-dywa-nginx-unstable: build-dywa-nginx
 	$(DEPLOY) dywa-nginx/unstable
 
 
