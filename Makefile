@@ -10,6 +10,11 @@ build-dywa-nginx:
 deploy-dywa-nginx-unstable:
 	$(DEPLOY) dywa-nginx/unstable
 
+test-dywa-nginx: build-dywa-nginx
+	cd dywa-nginx; \
+	docker-compose -f docker-compose.test.yml up; \
+	cd ..;
+
 
 # dywa-postgres
 
