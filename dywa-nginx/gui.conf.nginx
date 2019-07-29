@@ -1,6 +1,14 @@
 server {
-    listen                  80 default_server;
-    client_max_body_size    64m;
+    listen 80 default_server;
+
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+}
+
+server {
+    listen 443 default_server ssl;
 
     gzip on;
     gzip_min_length 1024;
@@ -26,13 +34,10 @@ server {
         application/vnd.ms-fontobject
         image/svg+xml;
 
-    location /.well-known/acme-challenge/ {
-        root /var/www/certbot;
-    }
-
     location / {
         root   /usr/share/nginx/html;
         index  index.html;
         try_files $uri $uri/ /index.html;
     }
+
 }

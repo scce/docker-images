@@ -1,5 +1,5 @@
 server {
-    listen                  8080;
+    listen                  8080 default_server ssl;
     client_max_body_size    64m;
 
     location /app/ws/ {
