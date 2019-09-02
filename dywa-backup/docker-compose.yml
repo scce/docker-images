@@ -1,0 +1,43 @@
+version: '3'
+volumes:
+  dywa-app-logs:
+  restic-cache:
+  wildfly:
+services:
+  backup:
+    build:
+      context: src
+    environment:
+      ENV_RESTIC_REPO_URL: sftp:root@sshd:/tmp/restic/repository
+      ENV_DYWA_APP_LOGS_PATH: /var/log/dywa-app
+      PGDATABASE: dywa
+      PGHOST: postgres
+      PGPASSWORD: password
+      PGUSER: user
+    volumes:
+      - ./test/backup/repository-password:/root/.repository-password:ro
+      - ./test/backup/ssh_config:/etc/ssh/ssh_config:ro
+      - ./test/sshd/id_rsa.pub:/root/.ssh/id_rsa.pub:ro
+      - ./test/sshd/id_rsa:/root/.ssh/id_rsa:ro
+      - dywa-app-logs:/var/log/dywa-app
+      - restic-cache:/root/.cache/restic
+      - wildfly:/opt/jboss/wildfly
+  wildfly:
+    build:
+      context: test/wildfly
+    volumes:
+      - dywa-app-logs:/var/log/dywa-app
+      - wildfly:/opt/jboss/wildfly
+  postgres:
+    environment:
+      POSTGRES_DB: dywa
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: user
+    image: postgres:10
+    ports:
+      - "49153:5432"
+  sshd:
+    build:
+      context: test/sshd
+    ports:
+      - "49154:22"
