@@ -12,5 +12,5 @@ RUN apt-get update -y && apt-get install -y \
                                         openssh-client
 COPY ./backup.sh /usr/local/bin/backup
 RUN chmod 755 /usr/local/bin/backup
-ENTRYPOINT /usr/local/bin/backup
+ENTRYPOINT ["/usr/local/bin/backup"]
 CMD ["--help"]

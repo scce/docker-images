@@ -20,7 +20,7 @@ def execute_command(args):
     stop = docker_compose % 'stop %s'
     rm_f = docker_compose % 'rm -f %s'
     up_d = docker_compose % 'up -d %s'
-    run_backup = docker_compose % 'run --rm --entrypoint /usr/local/bin/backup backup "--%s"'
+    run_backup = docker_compose % 'run --rm backup "--%s"'
 
     if args.command == 'backup':
         os.system(run_backup % args.command)
