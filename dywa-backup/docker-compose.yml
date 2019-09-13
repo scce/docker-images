@@ -35,9 +35,9 @@ services:
       POSTGRES_USER: user
     image: postgres:10
     ports:
-      - "49153:5432"
+      - "127.0.0.1:49153:5432"
   sshd:
     build:
       context: test/sshd
     ports:
-      - "49154:22"
+      - "127.0.0.1:49154:22"
