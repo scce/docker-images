@@ -1,0 +1,44 @@
+#!/usr/bin/env python3
+import argparse
+import os
+
+
+def configure_parser():
+    parser = argparse.ArgumentParser()
+    commands = parser.add_subparsers(dest='command')
+    commands.add_parser('backup')
+    commands.add_parser('check')
+    commands.add_parser('init')
+    commands.add_parser('restore')
+    commands.add_parser('up')
+    commands.add_parser('clean-db')
+    return parser
+
+
+def execute_command(args):
+    docker_compose = 'docker-compose %s'
+    stop = docker_compose % 'stop %s'
+    rm_f = docker_compose % 'rm -f %s'
+    up_d = docker_compose % 'up -d %s'
+    run_backup = docker_compose % 'run --rm --entrypoint /usr/local/bin/backup backup "--%s"'
+
+    if args.command == 'backup':
+        os.system(run_backup % args.command)
+    elif args.command == 'restore':
+        os.system(run_backup % args.command)
+    elif args.command == 'check':
+        os.system(run_backup % args.command)
+    elif args.command == 'init':
+        os.system(run_backup % args.command)
+    elif args.command == 'restore':
+        os.system(run_backup % args.command)
+    elif args.command == 'up':
+        os.system(docker_compose % args.command)
+    elif args.command == 'clean-db':
+        postgres_container = 'postgres'
+        os.system(stop % postgres_container)
+        os.system(rm_f % postgres_container)
+        os.system(up_d % postgres_container)
+
+
+execute_command(configure_parser().parse_args())
