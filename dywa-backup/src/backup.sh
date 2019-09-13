@@ -11,9 +11,7 @@ RESTIC_EXECUTABLE=/usr/local/bin/restic
 RESTIC_PASSWORD_FILE=/root/.repository-password
 
 WILDFLY_STANDALONE_PATH=/opt/jboss/wildfly/standalone
-WILDFLY_DEPLOY_PATH=${WILDFLY_STANDALONE_PATH}/deployments
 WILDFLY_FILES_PATH=${WILDFLY_STANDALONE_PATH}/data/files
-WILDFLY_LOGS_PATH=${WILDFLY_STANDALONE_PATH}/logs
 
 PGDUMP_SQL_FILE=pgdump.sql
 TEMP_BACKUP_FOLDER=/home/root//.__BACKUP_/
@@ -82,8 +80,8 @@ function doInstallVerification {
 function doBackup {
   BACKUPTAG=$1
   mkdir -p ${TEMP_BACKUP_FOLDER}
-  /usr/bin/pg_dumpall --clean > ${TEMP_BACKUP_FOLDER}/${PGDUMP_SQL_FILE}
-  runRestic backup ${WILDFLY_DEPLOY_PATH} ${TEMP_BACKUP_FOLDER}/${PGDUMP_SQL_FILE} ${WILDFLY_FILES_PATH} ${WILDFLY_LOGS_PATH} ${DYWA_APP_LOGS_PATH} --tag AIO --tag "${BACKUPTAG}"
+  /usr/bin/pg_dump dywa > ${TEMP_BACKUP_FOLDER}/${PGDUMP_SQL_FILE}
+  runRestic backup ${TEMP_BACKUP_FOLDER}/${PGDUMP_SQL_FILE} ${WILDFLY_FILES_PATH} ${DYWA_APP_LOGS_PATH} --tag AIO --tag "${BACKUPTAG}"
 }
 
 # interactive restore
@@ -97,7 +95,7 @@ function doRestore {
 
   doBackup preRestore
     rm ${TEMP_BACKUP_FOLDER} -rf --preserve-root;
-    runRestic restore ${BACKUP_REVISION_TO_RESTORE} --tag AIO,${TAG} --target /  && /usr/bin/psql < ${TEMP_BACKUP_FOLDER}/${PGDUMP_SQL_FILE}  && echo "Restore done."
+    runRestic restore ${BACKUP_REVISION_TO_RESTORE} --tag AIO,${TAG} --target /  && /usr/bin/psql --single-transaction --variable=ON_ERROR_STOP=1 dywa < ${TEMP_BACKUP_FOLDER}/${PGDUMP_SQL_FILE}  && echo "Restore done."
     rm ${TEMP_BACKUP_FOLDER} -rf --preserve-root;
 }
 
@@ -117,7 +115,7 @@ if systemctl is-active --quiet wildfly.service ;then
     esac ## check if wildfly is off soft error
 fi
 
-/usr/bin/pg_dumpall --clean &>/dev/null || (echo postgres service must run on restore exiting ...&& exit 1); ## postgres has to run in order to get restore working
+/usr/bin/pg_dump dywa &>/dev/null || (echo postgres service must run on restore exiting ...&& exit 1); ## postgres has to run in order to get restore working
 }
 
 # perform cleanup
