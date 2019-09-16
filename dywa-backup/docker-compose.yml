@@ -33,7 +33,7 @@ services:
       POSTGRES_DB: dywa
       POSTGRES_PASSWORD: password
       POSTGRES_USER: user
-    image: postgres:10
+    image: scce/dywa-postgres:latest
     ports:
       - "127.0.0.1:49153:5432"
   sshd:
