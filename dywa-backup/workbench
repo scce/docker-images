@@ -24,8 +24,6 @@ def execute_command(args):
 
     if args.command == 'backup':
         os.system(run_backup % args.command)
-    elif args.command == 'restore':
-        os.system(run_backup % args.command)
     elif args.command == 'check':
         os.system(run_backup % args.command)
     elif args.command == 'init':
