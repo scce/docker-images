@@ -29,13 +29,11 @@ services:
       - dywa-app-logs:/var/log/dywa-app
       - wildfly:/opt/jboss/wildfly
   postgres:
-    environment:
-      POSTGRES_DB: dywa
-      POSTGRES_PASSWORD: password
-      POSTGRES_USER: user
+    env_file:
+      - .env
     image: scce/dywa-postgres:latest
     ports:
-      - "127.0.0.1:49153:5432"
+      - "${POSTGRES_HOST}:${POSTGRES_PORT}:5432"
   sshd:
     build:
       context: test/sshd
