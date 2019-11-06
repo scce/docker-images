@@ -4,7 +4,8 @@ import os
 from faker import Faker
 from random import randint, Random
 from pprint import pprint
-
+from dotenv import dotenv_values
+import psycopg2
 
 def configure_parser():
     parser = argparse.ArgumentParser()
@@ -46,24 +47,59 @@ def execute_command(args):
 
 
 def seed_db():
+    (seed, tables) = generate_test_data()
+    print(f"Seed: {seed}")
+    connection = open_database_connection()
+    cursor = connection.cursor()
+    create_test_database(cursor, tables)
+    connection.commit()
+    connection.close()
+
+
+def generate_test_data():
     seed = randint(0, 999999)
-    print("Seed: %d" % seed)
     random = Random(seed)
     faker = Faker('de_DE')
     faker.seed(seed)
-    column_types = [{"type": "string", "faker": faker.name}]
+    column_types = [{"type": "text", "faker": faker.name}]
     tables = []
     n = 10
     for i in range(random.randint(0, n)):
         column_headers = [random.choice(column_types)
-                          for j in range(random.randint(0, n))]
+                          for j in range(random.randint(1, n))]
         rows = [[header["faker"]() for header in column_headers]
                 for k in range(random.randint(0, n))]
         tables.append({
             "column_headers": [header["type"] for header in column_headers],
             "rows": rows
         })
-    pprint(tables)
+    return (seed, tables)
+
+
+def open_database_connection():
+    config = dotenv_values()
+    return psycopg2.connect(
+        host=config["POSTGRES_HOST"],
+        port=config["POSTGRES_PORT"],
+        dbname=config["POSTGRES_DB"],
+        user=config["POSTGRES_USER"],
+        password=config["POSTGRES_PASSWORD"]
+    )
+
+
+def create_test_database(cursor, tables):
+    for (i, table) in enumerate(tables):
+        table_name = f"test{i}"
+        columns_statement = ", ".join(
+            [f"test{j} {header}"
+             for (j, header) in enumerate(table["column_headers"])]
+        )
+        table_statement = f"create table {table_name} ({columns_statement});"
+        cursor.execute(table_statement)
+        for row in table["rows"]:
+            values_statement = ", ".join(["%s"] * len(row))
+            insert_statement = f"insert into {table_name} values ({values_statement});"
+            cursor.execute(insert_statement, row)
 
 
 
