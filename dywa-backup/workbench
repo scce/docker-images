@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 import argparse
 import os
+from faker import Faker
+from random import randint, Random
+from pprint import pprint
 
 
 def configure_parser():
@@ -12,6 +15,7 @@ def configure_parser():
     commands.add_parser('restore')
     commands.add_parser('up')
     commands.add_parser('clean-db')
+    commands.add_parser('seed-db')
     return parser
 
 
@@ -37,6 +41,30 @@ def execute_command(args):
         os.system(stop % postgres_container)
         os.system(rm_f % postgres_container)
         os.system(up_d % postgres_container)
+    elif args.command == 'seed-db':
+        seed_db()
+
+
+def seed_db():
+    seed = randint(0, 999999)
+    print("Seed: %d" % seed)
+    random = Random(seed)
+    faker = Faker('de_DE')
+    faker.seed(seed)
+    column_types = [{"type": "string", "faker": faker.name}]
+    tables = []
+    n = 10
+    for i in range(random.randint(0, n)):
+        column_headers = [random.choice(column_types)
+                          for j in range(random.randint(0, n))]
+        rows = [[header["faker"]() for header in column_headers]
+                for k in range(random.randint(0, n))]
+        tables.append({
+            "column_headers": [header["type"] for header in column_headers],
+            "rows": rows
+        })
+    pprint(tables)
+
 
 
 execute_command(configure_parser().parse_args())
