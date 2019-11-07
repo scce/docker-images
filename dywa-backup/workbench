@@ -16,7 +16,8 @@ def configure_parser():
     commands.add_parser('restore')
     commands.add_parser('up')
     commands.add_parser('clean-db')
-    commands.add_parser('seed-db')
+    seed_db_parser = commands.add_parser('seed-db')
+    seed_db_parser.add_argument('--seed', type=int)
     return parser
 
 
@@ -43,11 +44,11 @@ def execute_command(args):
         os.system(rm_f % postgres_container)
         os.system(up_d % postgres_container)
     elif args.command == 'seed-db':
-        seed_db()
+        seed_db(args)
 
 
-def seed_db():
-    seed = randint(0, 999999)
+def seed_db(args):
+    seed = args.seed if args.seed is not None else randint(0, 999999)
     print(f"Seed: {seed}")
     tables = generate_test_data(seed)
     connection = open_database_connection()
