@@ -118,15 +118,14 @@ def seed_directory(args):
 
 
 def generate_directories(random, probability):
-    if random.random() < probability:
-        files = [f"file{i}" for i in range(random.randint(0, 10))]
-        return [{
-                    "name": f"folder{i}",
-                    "files": files,
-                    "children": generate_directories(random, probability / 2)
-                } for i in range(random.randint(0, 4))]
-    else:
-        return []
+    return [
+        {
+            "name": f"folder{i}",
+            "files": [f"file{i}" for i in range(random.randint(0, 10))],
+            "children": generate_directories(random, probability / 2)
+        }
+        for i in range(random.randint(0, 4))
+    ] if random.random() < probability else []
 
 
 def resolve_seed(args):
