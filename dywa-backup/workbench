@@ -107,5 +107,4 @@ def create_test_database(cursor, tables):
             cursor.execute(insert_statement, row)
 
 
-
 execute_command(configure_parser().parse_args())
