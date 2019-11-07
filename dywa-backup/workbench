@@ -61,7 +61,12 @@ def generate_test_data(seed):
     random = Random(seed)
     faker = Faker('de_DE')
     faker.seed(seed)
-    column_types = [{"type": "text", "faker": faker.name}]
+    column_types = [
+        {"type": "text", "faker": faker.name},
+        {"type": "integer", "faker": faker.pyint},
+        {"type": "boolean", "faker": faker.pybool},
+        {"type": "real", "faker": faker.pyfloat}
+    ]
     tables = []
     n = 10
     for i in range(random.randint(0, n)):
