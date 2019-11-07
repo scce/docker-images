@@ -47,8 +47,9 @@ def execute_command(args):
 
 
 def seed_db():
-    (seed, tables) = generate_test_data()
+    seed = randint(0, 999999)
     print(f"Seed: {seed}")
+    tables = generate_test_data(seed)
     connection = open_database_connection()
     cursor = connection.cursor()
     create_test_database(cursor, tables)
@@ -56,8 +57,7 @@ def seed_db():
     connection.close()
 
 
-def generate_test_data():
-    seed = randint(0, 999999)
+def generate_test_data(seed):
     random = Random(seed)
     faker = Faker('de_DE')
     faker.seed(seed)
@@ -73,7 +73,7 @@ def generate_test_data():
             "column_headers": [header["type"] for header in column_headers],
             "rows": rows
         })
-    return (seed, tables)
+    return tables
 
 
 def open_database_connection():
