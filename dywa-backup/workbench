@@ -121,8 +121,8 @@ def generate_directories(random, probability):
     return [
         {
             "name": f"folder{i}",
-            "files": {f"file{i}": "Lorem Ipsum"
-                      for i in range(random.randint(0, 10))},
+            "files": {f"file{j}": "Lorem Ipsum"
+                      for j in range(random.randint(0, 10))},
             "children": generate_directories(random, probability / 2)
         }
         for i in range(random.randint(0, 4))
