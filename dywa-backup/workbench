@@ -18,8 +18,8 @@ def configure_parser():
     commands.add_parser('clean-db')
     seed_db_parser = commands.add_parser('seed-db')
     seed_db_parser.add_argument('--seed', type=int)
-    seed_directory_parser = commands.add_parser('seed-directory')
-    seed_directory_parser.add_argument('--seed', type=int)
+    seed_fs_parser = commands.add_parser('seed-fs')
+    seed_fs_parser.add_argument('--seed', type=int)
     return parser
 
 
@@ -47,8 +47,8 @@ def execute_command(args):
         os.system(up_d % postgres_container)
     elif args.command == 'seed-db':
         seed_db(args)
-    elif args.command == 'seed-directory':
-        seed_directory(args)
+    elif args.command == 'seed-fs':
+        seed_fs(args)
 
 
 def seed_db(args):
@@ -111,7 +111,7 @@ def create_test_database(cursor, tables):
             cursor.execute(insert_statement, row)
 
 
-def seed_directory(args):
+def seed_fs(args):
     seed = resolve_seed(args)
     random = Random(seed)
     pprint(generate_directories(random, 1.0))
