@@ -103,9 +103,9 @@ def generate_table(random, faker):
 
 
 def postgresql_identifier(random):
-    return "".join(
-        random.choice("abcdefghijklmnopqrstuvwxyz_")
-        for _ in range(random.randint(5, 20))
+    return generate_identifier(
+        random,
+        list("abcdefghijklmnopqrstuvwxyz_"),
     )
 
 
@@ -153,14 +153,22 @@ def seed_fs(args):
 def generate_directory(random, probability):
     return {
         "files": {
-            f"file{j}": "Lorem Ipsum"
+            genereate_file_identifier(random): "Lorem Ipsum"
             for j in range(random.randint(0, 10))
         },
         "children": {
-            f"folder{i}": generate_directory(random, probability / 2)
+            genereate_file_identifier(random):
+                generate_directory(random, probability / 2)
             for i in range(random.randint(0, 4))
         } if random.random() < probability else {},
     }
+
+
+def genereate_file_identifier(random):
+    return generate_identifier(
+        random,
+        [chr(i) for i in range(32, 127) if chr(i) != "/"],
+    )
 
 
 def create_directory(location, directory):
@@ -178,6 +186,13 @@ def resolve_seed(args):
     seed = args.seed if args.seed is not None else randint(0, 999999)
     print(f"Seed: {seed}")
     return seed
+
+
+def generate_identifier(random, alphabet):
+    return "".join(
+        random.choice(alphabet)
+        for _ in range(random.randint(5, 20))
+    )
 
 
 execute_command(configure_parser().parse_args())
