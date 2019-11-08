@@ -65,24 +65,48 @@ def generate_test_data(seed):
     random = Random(seed)
     faker = Faker('de_DE')
     faker.seed(seed)
-    column_types = [
-        {"type": "text", "faker": faker.name},
-        {"type": "integer", "faker": faker.pyint},
-        {"type": "boolean", "faker": faker.pybool},
-        {"type": "real", "faker": faker.pyfloat}
+    return [
+        generate_table(random, faker)
+        for i in range(random.randint(0, 10))
     ]
-    tables = []
-    n = 10
-    for i in range(random.randint(0, n)):
-        column_headers = [random.choice(column_types)
-                          for j in range(random.randint(1, n))]
-        rows = [[header["faker"]() for header in column_headers]
-                for k in range(random.randint(0, n))]
-        tables.append({
-            "column_headers": [header["type"] for header in column_headers],
-            "rows": rows
-        })
-    return tables
+
+
+def generate_table(random, faker):
+    column_types = [
+        "text",
+        "integer",
+        "boolean",
+        "real",
+    ]
+    fakers = {
+        "text": faker.name,
+        "integer": faker.pyint,
+        "boolean": faker.pybool,
+        "real": faker.pyfloat,
+    }
+    column_headers = [{"type": "integer", "name": "id"}] + [
+        {
+            "type": random.choice(column_types),
+            "name": postgresql_identifier(random),
+        }
+        for j in range(1, random.randint(1, 10))
+    ]
+    rows = [
+        [fakers[header["type"]]() for header in column_headers]
+        for k in range(random.randint(0, 10))
+    ]
+    return {
+        "name": postgresql_identifier(random),
+        "column_headers": column_headers,
+        "rows": rows,
+    }
+
+
+def postgresql_identifier(random):
+    return "".join(
+        random.choice("abcdefghijklmnopqrstuvwxyz_")
+        for _ in range(random.randint(5, 20))
+    )
 
 
 def open_database_connection():
@@ -97,17 +121,18 @@ def open_database_connection():
 
 
 def create_test_database(cursor, tables):
-    for (i, table) in enumerate(tables):
-        table_name = f"test{i}"
-        columns_statement = ", ".join(
-            [f"test{j} {header}"
-             for (j, header) in enumerate(table["column_headers"])]
-        )
-        table_statement = f"create table {table_name} ({columns_statement});"
+    for table in tables:
+        columns_statement = ", ".join([
+            f"{header['name']} {header['type']}"
+            for header in table["column_headers"]
+        ])
+        table_statement = f"create table {table['name']} ({columns_statement});"
         cursor.execute(table_statement)
         for row in table["rows"]:
             values_statement = ", ".join(["%s"] * len(row))
-            insert_statement = f"insert into {table_name} values ({values_statement});"
+            insert_statement = (
+                f"insert into {table['name']} values ({values_statement});"
+            )
             cursor.execute(insert_statement, row)
 
 
@@ -121,8 +146,10 @@ def generate_directories(random, probability):
     return [
         {
             "name": f"folder{i}",
-            "files": {f"file{j}": "Lorem Ipsum"
-                      for j in range(random.randint(0, 10))},
+            "files": {
+                f"file{j}": "Lorem Ipsum"
+                for j in range(random.randint(0, 10))
+            },
             "children": generate_directories(random, probability / 2)
         }
         for i in range(random.randint(0, 4))
