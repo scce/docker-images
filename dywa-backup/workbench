@@ -63,8 +63,7 @@ def seed_db(args):
 
 def generate_test_data(seed):
     random = Random(seed)
-    faker = Faker('de_DE')
-    faker.seed(seed)
+    faker = build_faker(seed)
     return [
         generate_table(random, faker)
         for i in range(random.randint(0, 10))
@@ -139,6 +138,7 @@ def create_test_database(cursor, tables):
 def seed_fs(args):
     seed = resolve_seed(args)
     random = Random(seed)
+    faker = build_faker(seed)
     location = "./test-directory"
     try:
         os.mkdir(location)
@@ -146,19 +146,19 @@ def seed_fs(args):
         pass
     create_directory(
         location,
-        generate_directory(random, 1.0)
+        generate_directory(random, faker, 1.0)
     )
 
 
-def generate_directory(random, probability):
+def generate_directory(random, faker, probability):
     return {
         "files": {
-            genereate_file_identifier(random): "Lorem Ipsum"
+            genereate_file_identifier(random): faker.paragraph()
             for j in range(random.randint(0, 10))
         },
         "children": {
             genereate_file_identifier(random):
-                generate_directory(random, probability / 2)
+                generate_directory(random, faker, probability / 2)
             for i in range(random.randint(0, 4))
         } if random.random() < probability else {},
     }
@@ -193,6 +193,12 @@ def generate_identifier(random, alphabet):
         random.choice(alphabet)
         for _ in range(random.randint(5, 20))
     )
+
+
+def build_faker(seed):
+    faker = Faker("de_DE")
+    faker.seed(seed)
+    return faker
 
 
 execute_command(configure_parser().parse_args())
