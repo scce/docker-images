@@ -139,21 +139,39 @@ def create_test_database(cursor, tables):
 def seed_fs(args):
     seed = resolve_seed(args)
     random = Random(seed)
-    pprint(generate_directories(random, 1.0))
+    location = "./test-directory"
+    try:
+        os.mkdir(location)
+    except FileExistsError:
+        pass
+    create_directory(
+        location,
+        generate_directory(random, 1.0)
+    )
 
 
-def generate_directories(random, probability):
-    return [
-        {
-            "name": f"folder{i}",
-            "files": {
-                f"file{j}": "Lorem Ipsum"
-                for j in range(random.randint(0, 10))
-            },
-            "children": generate_directories(random, probability / 2)
-        }
-        for i in range(random.randint(0, 4))
-    ] if random.random() < probability else []
+def generate_directory(random, probability):
+    return {
+        "files": {
+            f"file{j}": "Lorem Ipsum"
+            for j in range(random.randint(0, 10))
+        },
+        "children": {
+            f"folder{i}": generate_directory(random, probability / 2)
+            for i in range(random.randint(0, 4))
+        } if random.random() < probability else {},
+    }
+
+
+def create_directory(location, directory):
+    for name, content in directory["files"].items():
+        with open(f"{location}/{name}", "w") as file:
+            file.write(content)
+    for name, child in directory["children"].items():
+        child_location = f"{location}/{name}"
+        os.mkdir(child_location)
+        create_directory(child_location, child)
+
 
 
 def resolve_seed(args):
