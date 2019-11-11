@@ -1,7 +1,8 @@
 import os
 from random import Random
 
-from workbench.database import open_database_connection
+from workbench.database import open_database_connection, wait_for_database_connection
+from workbench.dump import create_database_dump, compare_database_dumps
 from workbench.seed import resolve_seed, generate_test_data, create_test_database, build_faker, create_directory, \
     generate_directory
 
@@ -33,6 +34,7 @@ def clean_db():
     os.system(stop % postgres_container)
     os.system(rm_f % postgres_container)
     os.system(up_d % postgres_container)
+    wait_for_database_connection()
 
 
 def backup():
@@ -62,3 +64,30 @@ def seed_fs(args):
         location,
         generate_directory(random, faker, 1.0)
     )
+
+
+def test(args):
+    init()
+
+    clean_db()
+
+    seed_db(args)
+
+    before = create_database_dump()
+    backup()
+
+    clean_db()
+
+    restore()
+    after = create_database_dump()
+
+    passed = compare_database_dumps(before, after)
+
+    message = "failed"
+    exit_code = 1
+    if passed:
+        exit_code = 0
+        message = "passed"
+
+    print("Test %s" % message)
+    exit(exit_code)
