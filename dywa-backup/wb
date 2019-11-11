@@ -1,0 +1,42 @@
+#!/usr/bin/env python3
+import argparse
+
+from workbench.command import backup, check, init, restore, up, clean_db, seed_db, seed_fs
+
+
+def configure_parser():
+    parser = argparse.ArgumentParser()
+    commands = parser.add_subparsers(dest='command')
+    commands.add_parser('backup')
+    commands.add_parser('check')
+    commands.add_parser('init')
+    commands.add_parser('restore')
+    commands.add_parser('up')
+    commands.add_parser('clean-db')
+    seed_db_parser = commands.add_parser('seed-db')
+    seed_db_parser.add_argument('--seed', type=int)
+    seed_fs_parser = commands.add_parser('seed-fs')
+    seed_fs_parser.add_argument('--seed', type=int)
+    return parser
+
+
+def execute_command(args):
+    if args.command == 'backup':
+        backup()
+    elif args.command == 'check':
+        check()
+    elif args.command == 'init':
+        init()
+    elif args.command == 'restore':
+        restore()
+    elif args.command == 'up':
+        up()
+    elif args.command == 'clean-db':
+        clean_db()
+    elif args.command == 'seed-db':
+        seed_db(args)
+    elif args.command == 'seed-fs':
+        seed_fs(args)
+
+
+execute_command(configure_parser().parse_args())

@@ -1,54 +1,42 @@
-#!/usr/bin/env python3
-import argparse
 import os
-from faker import Faker
 from random import randint, Random
-from pprint import pprint
-from dotenv import dotenv_values
+
 import psycopg2
+from dotenv import dotenv_values
+from faker import Faker
 
-def configure_parser():
-    parser = argparse.ArgumentParser()
-    commands = parser.add_subparsers(dest='command')
-    commands.add_parser('backup')
-    commands.add_parser('check')
-    commands.add_parser('init')
-    commands.add_parser('restore')
-    commands.add_parser('up')
-    commands.add_parser('clean-db')
-    seed_db_parser = commands.add_parser('seed-db')
-    seed_db_parser.add_argument('--seed', type=int)
-    seed_fs_parser = commands.add_parser('seed-fs')
-    seed_fs_parser.add_argument('--seed', type=int)
-    return parser
+docker_compose = 'docker-compose %s'
+stop = docker_compose % 'stop %s'
+rm_f = docker_compose % 'rm -f %s'
+up_d = docker_compose % 'up -d %s'
+run_backup = docker_compose % 'run --rm backup "--%s"'
 
 
-def execute_command(args):
-    docker_compose = 'docker-compose %s'
-    stop = docker_compose % 'stop %s'
-    rm_f = docker_compose % 'rm -f %s'
-    up_d = docker_compose % 'up -d %s'
-    run_backup = docker_compose % 'run --rm backup "--%s"'
+def check():
+    os.system(run_backup % 'check')
 
-    if args.command == 'backup':
-        os.system(run_backup % args.command)
-    elif args.command == 'check':
-        os.system(run_backup % args.command)
-    elif args.command == 'init':
-        os.system(run_backup % args.command)
-    elif args.command == 'restore':
-        os.system(run_backup % args.command)
-    elif args.command == 'up':
-        os.system(docker_compose % args.command)
-    elif args.command == 'clean-db':
-        postgres_container = 'postgres'
-        os.system(stop % postgres_container)
-        os.system(rm_f % postgres_container)
-        os.system(up_d % postgres_container)
-    elif args.command == 'seed-db':
-        seed_db(args)
-    elif args.command == 'seed-fs':
-        seed_fs(args)
+
+def init():
+    os.system(run_backup % 'init')
+
+
+def restore():
+    os.system(run_backup % 'restore')
+
+
+def up():
+    os.system(docker_compose % 'up')
+
+
+def clean_db():
+    postgres_container = 'postgres'
+    os.system(stop % postgres_container)
+    os.system(rm_f % postgres_container)
+    os.system(up_d % postgres_container)
+
+
+def backup():
+    os.system(run_backup % 'backup')
 
 
 def seed_db(args):
@@ -153,18 +141,18 @@ def seed_fs(args):
 def generate_directory(random, faker, probability):
     return {
         "files": {
-            genereate_file_identifier(random): faker.paragraph()
+            generate_file_identifier(random): faker.paragraph()
             for j in range(random.randint(0, 10))
         },
         "children": {
-            genereate_file_identifier(random):
+            generate_file_identifier(random):
                 generate_directory(random, faker, probability / 2)
             for i in range(random.randint(0, 4))
         } if random.random() < probability else {},
     }
 
 
-def genereate_file_identifier(random):
+def generate_file_identifier(random):
     return generate_identifier(
         random,
         [chr(i) for i in range(32, 127) if chr(i) != "/"],
@@ -179,7 +167,6 @@ def create_directory(location, directory):
         child_location = f"{location}/{name}"
         os.mkdir(child_location)
         create_directory(child_location, child)
-
 
 
 def resolve_seed(args):
@@ -199,6 +186,3 @@ def build_faker(seed):
     faker = Faker("de_DE")
     faker.seed(seed)
     return faker
-
-
-execute_command(configure_parser().parse_args())
