@@ -6,6 +6,7 @@ from workbench.command import backup, check, init, restore, up, seed_db, seed_fs
 
 def configure_parser():
     parser = argparse.ArgumentParser()
+    parser.add_argument("--verbose", action="store_true")
     commands = parser.add_subparsers(dest='command')
     commands.add_parser('backup')
     commands.add_parser('check')
@@ -24,17 +25,17 @@ def configure_parser():
 
 def execute_command(args):
     if args.command == 'backup':
-        backup()
+        backup(args)
     elif args.command == 'check':
-        check()
+        check(args)
     elif args.command == 'init':
-        init()
+        init(args)
     elif args.command == 'restore':
-        restore()
+        restore(args)
     elif args.command == 'up':
-        up()
+        up(args)
     elif args.command == 'clean-db':
-        clean_db()
+        clean_db(args)
     elif args.command == 'seed-db':
         seed_db(args)
     elif args.command == 'seed-fs':

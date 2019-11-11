@@ -1,4 +1,5 @@
 import os
+import subprocess
 from random import Random
 
 from workbench.database import open_database_connection, wait_for_database_connection
@@ -6,39 +7,39 @@ from workbench.dump import create_database_dump, compare_database_dumps
 from workbench.seed import resolve_seed, generate_test_data, create_test_database, build_faker, create_directory, \
     generate_directory
 
-docker_compose = 'docker-compose %s'
-stop = docker_compose % 'stop %s'
-rm_f = docker_compose % 'rm -f %s'
-up_d = docker_compose % 'up -d %s'
-run_backup = docker_compose % 'run --rm backup "--%s"'
+docker_compose = ['docker-compose']
+stop = docker_compose + ['stop']
+rm_f = docker_compose + ['rm', '-f']
+up_d = docker_compose + ['up', '-d']
+run_backup = docker_compose + ['run', '--rm', 'backup']
 
 
-def check():
-    os.system(run_backup % 'check')
+def check(args):
+    __run_command(run_backup + ['--check'], args.verbose)
 
 
-def init():
-    os.system(run_backup % 'init')
+def init(args):
+    __run_command(run_backup + ['--init'], args.verbose)
 
 
-def restore():
-    os.system(run_backup % 'restore')
+def restore(args):
+    __run_command(run_backup + ['--restore', 'latest'], args.verbose)
 
 
-def up():
-    os.system(docker_compose % 'up')
+def up(args):
+    __run_command(docker_compose + ['up'], args.verbose)
 
 
-def clean_db():
+def clean_db(args):
     postgres_container = 'postgres'
-    os.system(stop % postgres_container)
-    os.system(rm_f % postgres_container)
-    os.system(up_d % postgres_container)
+    __run_command(stop + [postgres_container], args.verbose)
+    __run_command(rm_f + [postgres_container], args.verbose)
+    __run_command(up_d + [postgres_container], args.verbose)
     wait_for_database_connection()
 
 
-def backup():
-    os.system(run_backup % 'backup')
+def backup(args):
+    __run_command(run_backup + ['--backup'], args.verbose)
 
 
 def seed_db(args):
@@ -67,18 +68,18 @@ def seed_fs(args):
 
 
 def test(args):
-    init()
+    init(args)
 
-    clean_db()
+    clean_db(args)
 
     seed_db(args)
 
     before = create_database_dump()
-    backup()
+    backup(args)
 
-    clean_db()
+    clean_db(args)
 
-    restore()
+    restore(args)
     after = create_database_dump()
 
     passed = compare_database_dumps(before, after)
@@ -91,3 +92,12 @@ def test(args):
 
     print("Test %s" % message)
     exit(exit_code)
+
+
+def __run_command(command, verbose):
+    stdout = subprocess.PIPE
+    stderr = subprocess.PIPE
+    if verbose:
+        stdout = None
+        stderr = None
+    subprocess.run(command, stdout=stdout, stderr=stderr)
