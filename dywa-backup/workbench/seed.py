@@ -9,7 +9,7 @@ def generate_test_data(seed):
     faker = build_faker(seed)
     return [
         generate_table(random, faker)
-        for i in range(random.randint(0, 10))
+        for i in range(random.randint(1, 10))
     ]
 
 
