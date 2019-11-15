@@ -14,36 +14,39 @@ up_d = docker_compose + ['up', '-d']
 run_backup = docker_compose + ['run', '--rm', 'backup']
 
 
-def check(args):
-    __run_command(run_backup + ['--check'], args.verbose)
+def check(verbose):
+    __run_command(run_backup + ['--check'], verbose)
 
 
-def init(args):
-    __run_command(run_backup + ['--init'], args.verbose)
+def init(verbose):
+    __run_command(run_backup + ['--init'], verbose)
 
 
-def restore(args):
-    __run_command(run_backup + ['--restore', 'latest', '-y'], args.verbose)
+def restore(verbose, yes=False):
+    command = run_backup + ['--restore', 'latest']
+    if yes:
+        command = command + ['-y']
+    __run_command(command, verbose)
 
 
-def up(args):
-    __run_command(docker_compose + ['up'], args.verbose)
+def up(verbose):
+    __run_command(docker_compose + ['up'], verbose)
 
 
-def clean_db(args):
+def clean_db(verbose):
     postgres_container = 'postgres'
-    __run_command(stop + [postgres_container], args.verbose)
-    __run_command(rm_f + [postgres_container], args.verbose)
-    __run_command(up_d + [postgres_container], args.verbose)
+    __run_command(stop + [postgres_container], verbose)
+    __run_command(rm_f + [postgres_container], verbose)
+    __run_command(up_d + [postgres_container], verbose)
     wait_for_database_connection()
 
 
-def backup(args):
-    __run_command(run_backup + ['--backup'], args.verbose)
+def backup(verbose):
+    __run_command(run_backup + ['--backup'], verbose)
 
 
-def seed_db(args):
-    seed = resolve_seed(args)
+def seed_db(seed):
+    seed = resolve_seed(seed)
     tables = generate_test_data(seed)
     connection = open_database_connection()
     cursor = connection.cursor()
@@ -52,8 +55,8 @@ def seed_db(args):
     connection.close()
 
 
-def seed_fs(args):
-    seed = resolve_seed(args)
+def seed_fs(seed):
+    seed = resolve_seed(seed)
     random = Random(seed)
     faker = build_faker(seed)
     location = "./test-directory"
@@ -67,19 +70,19 @@ def seed_fs(args):
     )
 
 
-def test(args):
-    init(args)
+def test(verbose, seed):
+    init(verbose)
 
-    clean_db(args)
+    clean_db(verbose)
 
-    seed_db(args)
+    seed_db(seed)
 
     before = create_database_dump()
-    backup(args)
+    backup(verbose)
 
-    clean_db(args)
+    clean_db(verbose)
 
-    restore(args)
+    restore(verbose, True)
     after = create_database_dump()
 
     passed = compare_database_dumps(before, after)

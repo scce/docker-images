@@ -6,12 +6,13 @@ from workbench.command import backup, check, init, restore, up, seed_db, seed_fs
 
 def configure_parser():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--verbose", action="store_true")
+    parser.add_argument('--verbose', action='store_true')
     commands = parser.add_subparsers(dest='command')
     commands.add_parser('backup')
     commands.add_parser('check')
     commands.add_parser('init')
-    commands.add_parser('restore')
+    restore_parser = commands.add_parser('restore')
+    restore_parser.add_argument('-y', '--yes', action='store_true')
     commands.add_parser('up')
     commands.add_parser('clean-db')
     seed_db_parser = commands.add_parser('seed-db')
@@ -25,23 +26,23 @@ def configure_parser():
 
 def execute_command(args):
     if args.command == 'backup':
-        backup(args)
+        backup(args.verbose)
     elif args.command == 'check':
-        check(args)
+        check(args.verbose)
     elif args.command == 'init':
-        init(args)
+        init(args.verbose)
     elif args.command == 'restore':
-        restore(args)
+        restore(args.verbose, args.yes)
     elif args.command == 'up':
-        up(args)
+        up(args.verbose)
     elif args.command == 'clean-db':
-        clean_db(args)
+        clean_db(args.verbose)
     elif args.command == 'seed-db':
-        seed_db(args)
+        seed_db(args.seed)
     elif args.command == 'seed-fs':
-        seed_fs(args)
+        seed_fs(args.seed)
     elif args.command == 'test':
-        test(args)
+        test(args.verbose, args.seed)
 
 
 execute_command(configure_parser().parse_args())

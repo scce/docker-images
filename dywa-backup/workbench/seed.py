@@ -98,8 +98,8 @@ def create_directory(location, directory):
         create_directory(child_location, child)
 
 
-def resolve_seed(args):
-    seed = args.seed if args.seed is not None else randint(0, 999999)
+def resolve_seed(seed):
+    seed = seed if seed is not None else randint(0, 999999)
     print(f"Seed: {seed}")
     return seed
 
