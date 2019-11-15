@@ -23,7 +23,7 @@ def init(args):
 
 
 def restore(args):
-    __run_command(run_backup + ['--restore', 'latest'], args.verbose)
+    __run_command(run_backup + ['--restore', 'latest', '-y'], args.verbose)
 
 
 def up(args):

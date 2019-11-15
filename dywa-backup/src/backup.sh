@@ -101,11 +101,13 @@ function doRestore() {
 
 # interactive
 function checkForRestore() {
-  read -e -t 10 -n1 -p "Restoring backup results in removal of existing state. Continue? [y/n]" resume
-  case $resume in
-  y | Y | J | j\n) echo ;;
-  *) exit 1 ;;
-  esac
+  if [ ${yes} -eq 0 ]; then
+    read -e -t 10 -n1 -p "Restoring backup results in removal of existing state. Continue? [y/n]" resume
+    case $resume in
+    y | Y | J | j\n) echo ;;
+    *) exit 1 ;;
+    esac
+  fi
 
   if systemctl is-active --quiet wildfly.service; then
     read -e -t 10 -n1 -p "You should stop the wildfly service prior to restoring. Continue anyhow?[y/n]" resume
@@ -128,18 +130,19 @@ function printHelp() {
   echo "
 Performs backup and restore operations on specified backup repository.
   Operations:
-  -i, --init             	    Initialize a new backup repository, operation is idempotent unless --force-init flag is set.
-  -b, --backup           	    Create a new backup for database,wildfly files and logs.
-  -c, --cleanup		 	        Removes no longer needed snapshots.
-  -C, --check            	    Checks the underlying backup repository for consistency.
-  -h, --help             	    Prints this help text.
-  -s, --snapshots        	    Lists all existing snapshots of given repository.
-  -r, --restore [#revision]     restore #revision, if none given restore latest snapshot, see also --revert-restore.
+  -i, --init                  Initialize a new backup repository, operation is idempotent unless --force-init flag is set.
+  -b, --backup                Create a new backup for database,wildfly files and logs.
+  -c, --cleanup               Removes no longer needed snapshots.
+  -C, --check                 Checks the underlying backup repository for consistency.
+  -h, --help                  Prints this help text.
+  -s, --snapshots             Lists all existing snapshots of given repository.
+  -r, --restore [#revision]   restore #revision, if none given restore latest snapshot, see also --revert-restore.
   Flags:
-  --revert-restore  		    Undoes the previous restore operation.
-  --force-init      		    Initilize a new repository even if a valid repository exists.
-               	     		    A backup of the overwritten repository is created.
-  --check-data      		    Also check repository data files for inconsistencies.
+  --revert-restore            Undoes the previous restore operation.
+  --force-init                Initilize a new repository even if a valid repository exists.
+                              A backup of the overwritten repository is created.
+  --check-data                Also check repository data files for inconsistencies.
+  -y, --yes                   Answer prompts directly with yes
 
 At least one operation must be given."
 
@@ -189,6 +192,7 @@ checkData=0
 revertRestore=0
 snapshots=0
 restore=0
+yes=0
 until [ "x${1}" == "x" ]; do
   case ${1} in
   "-i" | "--init")
@@ -217,6 +221,9 @@ until [ "x${1}" == "x" ]; do
     ;;
   "--check-data")
     checkData=1
+    ;;
+  "-y" | "--yes")
+    yes=1
     ;;
   "-r" | "--restore")
     shift
