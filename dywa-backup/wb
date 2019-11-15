@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 
-from workbench.command import backup, check, init, restore, up, seed_db, seed_fs, test, clean_db
+from workbench.command import backup, check, init, restore, up, seed_db, seed_fs, test, clean_db, clean_fs
 
 
 def configure_parser():
@@ -15,6 +15,7 @@ def configure_parser():
     restore_parser.add_argument('-y', '--yes', action='store_true')
     commands.add_parser('up')
     commands.add_parser('clean-db')
+    commands.add_parser('clean-fs')
     seed_db_parser = commands.add_parser('seed-db')
     seed_db_parser.add_argument('--seed', type=int)
     seed_fs_parser = commands.add_parser('seed-fs')
@@ -37,6 +38,8 @@ def execute_command(args):
         up(args.verbose)
     elif args.command == 'clean-db':
         clean_db(args.verbose)
+    elif args.command == 'clean-fs':
+        clean_fs(args.verbose)
     elif args.command == 'seed-db':
         seed_db(args.seed)
     elif args.command == 'seed-fs':

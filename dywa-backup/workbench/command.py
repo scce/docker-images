@@ -41,6 +41,11 @@ def clean_db(verbose):
     wait_for_database_connection()
 
 
+def clean_fs(verbose):
+    for location in __generate_wildfly_data_directories():
+        __run_command(['rm', '-rf', location], verbose)
+
+
 def backup(verbose):
     __run_command(run_backup + ['--backup'], verbose)
 
@@ -59,8 +64,7 @@ def seed_fs(seed):
     seed = resolve_seed(seed)
     random = Random(seed)
     faker = build_faker(seed)
-    for directory in ["data", "dywa-app-logs"]:
-        location = f"test/wildfly/{directory}"
+    for location in __generate_wildfly_data_directories():
         try:
             os.mkdir(location)
         except FileExistsError:
@@ -96,6 +100,13 @@ def test(verbose, seed):
 
     print("Test %s" % message)
     exit(exit_code)
+
+
+def __generate_wildfly_data_directories():
+    return map(
+        lambda directory: f"test/wildfly/{directory}",
+        ["data", "dywa-app-logs"]
+    )
 
 
 def __run_command(command, verbose):
