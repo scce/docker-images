@@ -79,18 +79,24 @@ def test(verbose, seed):
     init(verbose)
 
     clean_db(verbose)
+    clean_fs(verbose)
 
     seed_db(seed)
+    seed_fs(seed)
 
     before = create_database_dump()
+    # todo create filesystem dump before
     backup(verbose)
 
     clean_db(verbose)
+    clean_fs(verbose)
 
     restore(verbose, True)
     after = create_database_dump()
+    # todo create filesystem dump after
 
     passed = compare_database_dumps(before, after)
+    # todo compare filesystem dump before and after
 
     message = "failed"
     exit_code = 1
