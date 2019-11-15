@@ -45,3 +45,13 @@ def compare_database_dumps(before, after):
         raise Exception(no_tables_message % "after")
 
     return before == after
+
+
+def create_filesystem_dump():
+    # todo implement
+    return []
+
+
+def compare_filesystem_dumps(before, after):
+    # todo implement
+    return before == after

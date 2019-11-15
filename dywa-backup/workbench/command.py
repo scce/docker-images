@@ -3,7 +3,8 @@ import subprocess
 from random import Random
 
 from workbench.database import open_database_connection, wait_for_database_connection
-from workbench.dump import create_database_dump, compare_database_dumps
+from workbench.dump import create_database_dump, compare_database_dumps, create_filesystem_dump, \
+    compare_filesystem_dumps
 from workbench.seed import resolve_seed, generate_test_data, create_test_database, build_faker, create_directory, \
     generate_directory
 
@@ -85,19 +86,24 @@ def test(verbose, seed):
     seed_db(seed)
     seed_fs(seed)
 
-    before = create_database_dump()
-    # todo create filesystem dump before
+    database_before = create_database_dump()
+    filesystem_before = create_filesystem_dump()
     backup(verbose)
 
     clean_db(verbose)
     clean_fs(verbose)
 
     restore(verbose, True)
-    after = create_database_dump()
-    # todo create filesystem dump after
+    database_after = create_database_dump()
+    filesystem_after = create_filesystem_dump()
 
-    passed = compare_database_dumps(before, after)
-    # todo compare filesystem dump before and after
+    passed = compare_database_dumps(
+        database_before,
+        database_after
+    ) and compare_filesystem_dumps(
+        filesystem_before,
+        filesystem_after
+    )
 
     message = "failed"
     exit_code = 1
