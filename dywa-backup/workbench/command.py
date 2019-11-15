@@ -51,8 +51,8 @@ def backup(verbose):
     __run_command(run_backup + ['--backup'], verbose)
 
 
-def seed_db(seed):
-    seed = resolve_seed(seed)
+def seed_db(verbose, seed):
+    seed = resolve_seed(verbose, seed)
     tables = generate_test_data(seed)
     connection = open_database_connection()
     cursor = connection.cursor()
@@ -61,8 +61,8 @@ def seed_db(seed):
     connection.close()
 
 
-def seed_fs(seed):
-    seed = resolve_seed(seed)
+def seed_fs(verbose, seed):
+    seed = resolve_seed(verbose, seed)
     random = Random(seed)
     faker = build_faker(seed)
     for location in __generate_wildfly_data_directories():
@@ -82,9 +82,9 @@ def test(verbose, seed):
     clean_db(verbose)
     clean_fs(verbose)
 
-    seed = resolve_seed(seed)
-    seed_db(seed)
-    seed_fs(seed)
+    seed = resolve_seed(verbose, seed)
+    seed_db(False, seed)
+    seed_fs(False, seed)
 
     database_before = create_database_dump()
     filesystem_before = create_filesystem_dump()

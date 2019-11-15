@@ -41,9 +41,9 @@ def execute_command(args):
     elif args.command == 'clean-fs':
         clean_fs(args.verbose)
     elif args.command == 'seed-db':
-        seed_db(args.seed)
+        seed_db(args.verbose, args.seed)
     elif args.command == 'seed-fs':
-        seed_fs(args.seed)
+        seed_fs(args.verbose, args.seed)
     elif args.command == 'test':
         test(args.verbose, args.seed)
 

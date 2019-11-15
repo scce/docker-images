@@ -98,9 +98,10 @@ def create_directory(location, directory):
         create_directory(child_location, child)
 
 
-def resolve_seed(seed):
+def resolve_seed(verbose, seed):
     seed = seed if seed is not None else randint(0, 999999)
-    print(f"Seed: {seed}")
+    if verbose:
+        print(f"Seed: {seed}")
     return seed
 
 
