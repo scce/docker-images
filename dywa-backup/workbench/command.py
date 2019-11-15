@@ -53,18 +53,19 @@ def seed_db(args):
 
 
 def seed_fs(args):
-    seed = resolve_seed(args)
-    random = Random(seed)
-    faker = build_faker(seed)
-    location = "./test-directory"
-    try:
-        os.mkdir(location)
-    except FileExistsError:
-        pass
-    create_directory(
-        location,
-        generate_directory(random, faker, 1.0)
-    )
+    for directory in ["data", "dywa-app-logs"]:
+        location = f"test/wildfly/{directory}"
+        seed = resolve_seed(args)
+        random = Random(seed)
+        faker = build_faker(seed)
+        try:
+            os.mkdir(location)
+        except FileExistsError:
+            pass
+        create_directory(
+            location,
+            generate_directory(random, faker, 1.0)
+        )
 
 
 def test(args):
