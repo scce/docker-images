@@ -26,8 +26,8 @@ services:
     build:
       context: test/wildfly
     volumes:
-      - dywa-app-logs:/var/log/dywa-app
-      - wildfly:/opt/jboss/wildfly
+      - ./test/wildfly/dywa-app-logs:/var/log/dywa-app
+      - ./test/wildfly/data:/opt/jboss/wildfly
   postgres:
     env_file:
       - .env
