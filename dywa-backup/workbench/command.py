@@ -81,6 +81,7 @@ def test(verbose, seed):
     clean_db(verbose)
     clean_fs(verbose)
 
+    seed = resolve_seed(seed)
     seed_db(seed)
     seed_fs(seed)
 
