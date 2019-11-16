@@ -45,7 +45,7 @@ function doInit() {
     (echo >&2 "no restic repository found at ${RESTIC_REPO}, initializing ...")
     runRestic init
   else
-    (echo >&2 "restic repository already found at ${RESTIC_REPO}!Use --force-init to override existing repository")
+    (echo -e >&2 "restic repository already found at ${RESTIC_REPO}!\nUse --force-init to override existing repository")
   fi
 }
 
