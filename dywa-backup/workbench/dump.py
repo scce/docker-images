@@ -1,3 +1,6 @@
+import os
+from os.path import join
+
 from workbench.database import open_database_connection
 
 
@@ -47,11 +50,33 @@ def compare_database_dumps(before, after):
     return before == after
 
 
-def create_filesystem_dump():
-    # todo implement
-    return []
+def create_filesystem_dump(path):
+    dump = []
+    for directory_path, dirs, filename_list in os.walk(path):
+        dump.append(
+            read_folder(directory_path, filename_list)
+        )
+    return dump
+
+
+def read_folder(directory_path, filename_list):
+    return {
+        'directory_path': directory_path,
+        'file_list': read_files(directory_path, filename_list)
+    }
+
+
+def read_files(directory_path, filename_list):
+    file_list = []
+    for filename in filename_list:
+        file_path = join(directory_path, filename)
+        with open(file_path, 'r') as file_path:
+            file_list.append({
+                'filename': filename,
+                'content': file_path.read()
+            })
+    return file_list
 
 
 def compare_filesystem_dumps(before, after):
-    # todo implement
     return before == after

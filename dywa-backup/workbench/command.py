@@ -14,6 +14,8 @@ rm_f = docker_compose + ['rm', '-f']
 up_d = docker_compose + ['up', '-d']
 run_backup = docker_compose + ['run', '--rm', 'backup']
 
+wildfly_data_directories = "test/wildfly"
+
 
 def check(verbose):
     __run_command(run_backup + ['--check'], verbose)
@@ -87,7 +89,7 @@ def test(verbose, seed):
     seed_fs(False, seed)
 
     database_before = create_database_dump()
-    filesystem_before = create_filesystem_dump()
+    filesystem_before = create_filesystem_dump(wildfly_data_directories)
     backup(verbose)
 
     clean_db(verbose)
@@ -95,7 +97,7 @@ def test(verbose, seed):
 
     restore(verbose, True)
     database_after = create_database_dump()
-    filesystem_after = create_filesystem_dump()
+    filesystem_after = create_filesystem_dump(wildfly_data_directories)
 
     passed = compare_database_dumps(
         database_before,
@@ -117,7 +119,7 @@ def test(verbose, seed):
 
 def __generate_wildfly_data_directories():
     return map(
-        lambda directory: f"test/wildfly/{directory}",
+        lambda directory: f"{wildfly_data_directories}/{directory}",
         ["data", "dywa-app-logs"]
     )
 
