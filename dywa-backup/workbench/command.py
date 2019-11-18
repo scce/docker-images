@@ -46,7 +46,7 @@ def clean_db(verbose):
 
 def clean_fs(verbose):
     for location in __generate_wildfly_data_directories():
-        __run_command(['rm', '-rf', location], verbose)
+        __run_command(['rm', '-rf', '--preserve-root', location], verbose)
 
 
 def backup(verbose):
