@@ -109,14 +109,6 @@ function checkForRestore() {
     esac
   fi
 
-  if systemctl is-active --quiet wildfly.service; then
-    read -e -t 10 -n1 -p "You should stop the wildfly service prior to restoring. Continue anyhow?[y/n]" resume
-    case $resume in
-    y | Y | J | j\n) echo ;;
-    *) exit 1 ;;
-    esac ## check if wildfly is off soft error
-  fi
-
   /usr/bin/pg_dump dywa &>/dev/null || (echo postgres service must run on restore exiting ... && exit 1) ## postgres has to run in order to get restore working
 }
 
