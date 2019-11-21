@@ -1,6 +1,8 @@
 import os
 import subprocess
 from random import Random
+import os.path
+import shutil
 
 from workbench.database import open_database_connection, wait_for_database_connection
 from workbench.dump import create_database_dump, compare_database_dumps, create_filesystem_dump, \
@@ -9,12 +11,9 @@ from workbench.seed import resolve_seed, generate_test_data, create_test_databas
     generate_directory
 
 docker_compose = ['docker-compose']
-stop = docker_compose + ['stop']
-rm_f = docker_compose + ['rm', '-f']
-up_d = docker_compose + ['up', '-d']
 run_backup = docker_compose + ['run', '--rm', 'backup']
-
-wildfly_data_directories = "test/wildfly"
+volumes_path = "volumes"
+wildfly_volume = "volumes/wildfly"
 
 
 def check(verbose):
@@ -37,16 +36,16 @@ def up(verbose):
 
 
 def clean_db(verbose):
-    postgres_container = 'postgres'
-    __run_command(stop + [postgres_container], verbose)
-    __run_command(rm_f + [postgres_container], verbose)
-    __run_command(up_d + [postgres_container], verbose)
+    __run_command(["run-supervisorctl", "stop",  "postgresql"], verbose)
+    remove_volume("postgresql")
+    __run_command(["create-postgresql-volume"], verbose)
+    __run_command(["run-supervisorctl", "start", "postgresql"], verbose)
     wait_for_database_connection()
+    __run_command(["create-postgresql-database"], verbose)
 
 
 def clean_fs(verbose):
-    for location in __generate_wildfly_data_directories():
-        __run_command(['rm', '-rf', '--preserve-root', location], verbose)
+    remove_volume("wildfly", recreate=True)
 
 
 def backup(verbose):
@@ -89,7 +88,7 @@ def test(verbose, seed):
     seed_fs(False, seed)
 
     database_before = create_database_dump()
-    filesystem_before = create_filesystem_dump(wildfly_data_directories)
+    filesystem_before = create_filesystem_dump(wildfly_volume)
     backup(verbose)
 
     clean_db(verbose)
@@ -97,7 +96,7 @@ def test(verbose, seed):
 
     restore(verbose, True)
     database_after = create_database_dump()
-    filesystem_after = create_filesystem_dump(wildfly_data_directories)
+    filesystem_after = create_filesystem_dump(wildfly_volume)
 
     passed = compare_database_dumps(
         database_before,
@@ -119,7 +118,7 @@ def test(verbose, seed):
 
 def __generate_wildfly_data_directories():
     return map(
-        lambda directory: f"{wildfly_data_directories}/{directory}",
+        lambda directory: f"{wildfly_volume}/{directory}",
         ["data", "dywa-app-logs"]
     )
 
@@ -131,3 +130,15 @@ def __run_command(command, verbose):
         stdout = None
         stderr = None
     subprocess.run(command, stdout=stdout, stderr=stderr)
+
+
+def remove_volume(service, recreate=False):
+    if not os.path.isfile(f"{volumes_path}/dywa-backup-volumes-safety-marker"):
+        raise Exception(
+            "Unsafe file removal, missing marker file "
+            "dywa-backup-volumes-safety-marker."
+        )
+    volume_path = f"{volumes_path}/{service}"
+    shutil.rmtree(volume_path)
+    if recreate:
+        os.mkdir(volume_path)

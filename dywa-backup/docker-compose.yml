@@ -20,18 +20,12 @@ services:
       - ./test/wildfly/data:/opt/jboss/wildfly/standalone/data/files
       - ./test/wildfly/dywa-app-logs:/var/log/dywa-app
       - restic-cache:/root/.cache/restic
-  wildfly:
-    build:
-      context: test/wildfly
-    volumes:
-      - ./test/wildfly/dywa-app-logs:/var/log/dywa-app
-      - ./test/wildfly/data:/opt/jboss/wildfly/standalone/data/files
-  postgres:
-    env_file:
-      - .env
-    image: scce/dywa-postgres:latest
-    ports:
-      - "${POSTGRES_HOST}:${POSTGRES_PORT}:5432"
+  #wildfly:
+  #  build:
+  #    context: test/wildfly
+  #  volumes:
+  #    - ./test/wildfly/dywa-app-logs:/var/log/dywa-app
+  #    - ./test/wildfly/data:/opt/jboss/wildfly/standalone/data/files
   sshd:
     build:
       context: test/sshd
