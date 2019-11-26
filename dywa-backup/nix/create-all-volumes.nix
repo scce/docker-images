@@ -6,7 +6,7 @@ let create-postgresql-volume = import ./create-postgresql-volume.nix { inherit p
 in pkgs.writeScriptBin "create-all-volumes" ''
     #!${pkgs.bash}/bin/bash
     set -euo pipefail
-    mkdir -p "${volumesPath}/"{supervisord,postgresql-socket,restic-repository,wildfly}
+    mkdir -p "${volumesPath}/"{supervisord,restic-repository,wildfly}
     ${create-postgresql-volume}/bin/create-postgresql-volume
     touch "${volumesPath}/dywa-backup-volumes-safety-marker"
 ''

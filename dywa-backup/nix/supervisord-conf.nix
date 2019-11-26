@@ -5,10 +5,9 @@ let postgresqlConnection = pkgs.lib.importJSON ../postgresql-connection.json;
     postgresqlConfigFile = pkgs.writeText "postgresql.conf" ''
         listen_addresses='${postgresqlConnection.host}'
         port=${toString postgresqlConnection.port}
-        unix_socket_directories='${volumesPath}/postgresql-socket'
+        unix_socket_directories=${"''"}
     '';
     postgresqlHBAFile = pkgs.writeText "pg_hba.conf" ''
-        local all all              trust
         host  all all 127.0.0.1/32 password
         host  all all ::1/128      password
     '';
