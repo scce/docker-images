@@ -2,16 +2,6 @@ GROUP=scce
 BUILD=docker build -t $(GROUP)/
 DEPLOY=./deploy.sh master
 
-
-# dywa-nginx
-
-build-dywa-nginx:
-	$(BUILD)dywa-nginx dywa-nginx
-
-deploy-dywa-nginx-unstable: build-dywa-nginx
-	$(DEPLOY) dywa-nginx/unstable
-
-
 # dywa-postgres
 
 build-dywa-postgres:
@@ -48,4 +38,4 @@ build-maven:
 	$(BUILD)maven mailcatcher
 
 
-build-all: build-dywa-nginx build-dywa-postgres build-frontend-dart build-frontend-nginx build-mailcatcher build-maven
+build-all: build-dywa-postgres build-frontend-dart build-frontend-nginx build-mailcatcher build-maven
