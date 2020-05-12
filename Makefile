@@ -8,15 +8,6 @@ build-dywa-postgres:
 	$(BUILD)dywa-postgres dywa-postgres
 
 
-# frontend-dart
-
-build-frontend-dart:
-	$(BUILD)frontend-dart frontend-dart
-
-deploy-frontend-dart-latest:
-	$(DEPLOY) frontend-dart/latest
-
-
 # frontend-nginx
 
 build-frontend-nginx:
@@ -38,4 +29,4 @@ build-maven:
 	$(BUILD)maven mailcatcher
 
 
-build-all: build-dywa-postgres build-frontend-dart build-frontend-nginx build-mailcatcher build-maven
+build-all: build-dywa-postgres build-frontend-nginx build-mailcatcher build-maven
