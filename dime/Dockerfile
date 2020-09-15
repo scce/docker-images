@@ -11,4 +11,4 @@ FROM debian:9.13
 RUN apt-get update -qq && \
       apt-get upgrade -qq && \
       apt-get install -qq openjdk-8-jdk
-COPY --from=0 DIME .
+COPY --from=0 DIME DIME
