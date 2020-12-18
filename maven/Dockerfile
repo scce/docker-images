@@ -1,4 +1,4 @@
-FROM maven:3.5.4
+FROM maven:3.5.4-jdk-11
 
 ARG USER_HOME_DIR="/root"
 
