@@ -9,7 +9,7 @@ RUN set -xe \
     && apk add --no-cache --virtual .build-deps \
         build-base \
         sqlite-dev \
-    && gem install mailcatcher -v 0.6.5 --no-ri --no-rdoc \
+    && gem install mailcatcher -v 0.7.1 --no-ri --no-rdoc \
     && apk del .build-deps
 
 # smtp port
@@ -18,4 +18,6 @@ EXPOSE 1025
 # webserver port
 EXPOSE 1080
 
-CMD ["mailcatcher", "--foreground", "--ip=0.0.0.0"]
+ENV HTTP_PATH /
+
+CMD mailcatcher --foreground --ip 0.0.0.0 --http-path $HTTP_PATH
