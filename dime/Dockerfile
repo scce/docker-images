@@ -1,5 +1,5 @@
 FROM debian:9.13
-ENV DIME_FILE dime2-latest-linux.zip
+ENV DIME_FILE dime-latest-linux.zip
 RUN apt-get update -qq && \
       apt-get upgrade -qq && \
       apt-get install -qq unzip
